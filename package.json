@@ -16,11 +16,10 @@
     "ghm": "1.0.0-2",
     "yaml": "0.2.3",
     "underscore": "1.3.x",
-    "async": "0.1.16"
+    "async": "0.1.16",
+    "yamlmd": "0.0.1"
   },
-  "scripts": {
-  },
-  "devDependencies": {
-  },
+  "scripts": {},
+  "devDependencies": {},
   "optionalDependencies": {}
 }

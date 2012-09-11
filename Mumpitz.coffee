@@ -10,13 +10,14 @@ require 'coffee-script'
 
 _         = require 'underscore'
 async     = require 'async'
-yamlGhm   = require './plugins/yamlGhm'
+yamlmd    = require 'yamlmd'
 renderer  = require './plugins/renderer'
-fileSaver = require './plugins/fileSaver'
 
 class Mumpitz
   module.exports = Mumpitz
   constructor: (properties) ->
+    unless properties.dir
+      throw new Error 'please specify "dir" where your articles are'
     @blog = new class Blog
     _.defaults @blog, properties
     _.defaults @blog,
@@ -24,6 +25,5 @@ class Mumpitz
       template : __dirname + '/theme/article.mustache'
     
   go: (cb) ->
-    blog = @blog
-    plugins = [ yamlGhm, renderer, fileSaver ]
+    fs.
     async.series (plugins.map (p) -> async.apply p, blog), cb
