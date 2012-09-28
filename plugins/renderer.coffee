@@ -1,8 +1,8 @@
 ###
 
-renderer for mustache templates.
+Renderer for mustache templates.
 
-@author johann philipp strathausen <strathausen@gmail.com>
+@author Johann Philipp Strathausen <strathausen@gmail.com>
 
 ###
 
@@ -10,7 +10,6 @@ fs        = require 'fs'
 path      = require 'path'
 hogan     = require 'hogan.js'
 async     = require 'async'
-match     = /\.mustache$/i
 templates = {}
 
 templater = ({ template, layout}, article) ->
@@ -28,9 +27,9 @@ loader = ({ layout, template }, next) ->
   ), next
 
 Renderer = (blog) -> (article) ->
-  template = article.template or blog.template
-  layout   = article.layout or blog.layout
-  article.plain = templater { template, layout }, article
+  template = article.template
+  layout   = article.layout
+  templater { template, layout }, article
 
 module.exports = (blog, cb) ->
   async.series [
