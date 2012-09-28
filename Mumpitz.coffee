@@ -10,8 +10,9 @@ require 'coffee-script'
 
 _         = require 'underscore'
 async     = require 'async'
+# Plugins, implementing the stream api
 yamlmd    = require 'yamlmd'
-renderer  = require './plugins/renderer'
+schnauzer = require 'schnauzer'
 
 class Mumpitz
   module.exports = Mumpitz
@@ -21,9 +22,8 @@ class Mumpitz
     @blog = new class Blog
     _.defaults @blog, properties
     _.defaults @blog,
-      articles : []
-      template : __dirname + '/theme/article.mustache'
+      documents : []
+      template  : __dirname + '/theme/article.mustache'
     
   go: (cb) ->
-    fs.
     async.series (plugins.map (p) -> async.apply p, blog), cb
