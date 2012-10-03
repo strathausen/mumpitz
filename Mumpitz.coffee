@@ -38,7 +38,7 @@ class Mumpitz
       #console.error docs
       #return do cb
       async.forEach docs, ((doc, cb) =>
-        return do cb unless /\.(hbs|markdown|yamlmd)$/.test doc
+        return do cb unless /\.(markdown|yamlmd)$/.test doc
         props = {}
         rs = fs.createReadStream path.join @blog.dir, doc
         rs
