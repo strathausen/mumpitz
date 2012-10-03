@@ -31,7 +31,7 @@ class Mumpitz
     _.defaults @blog, properties
     _.defaults @blog,
       documents : []
-      template  : __dirname + '/example/theme/article.mustache'
+      template  : __dirname + '/example/theme/article.hbs'
     
   go: (cb) ->
     fs.readdir @blog.dir, (err, docs) =>
@@ -53,5 +53,7 @@ class Mumpitz
       ), cb
 
 unless module.parent
-  mu = new Mumpitz dir: __dirname + '/example/articles'
+  mu = new Mumpitz
+    dir: __dirname + '/example/articles'
+    layout: __dirname + '/example/theme/layout.hbs'
   mu.go console.log
