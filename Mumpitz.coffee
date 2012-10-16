@@ -43,18 +43,17 @@ class Mumpitz
       return cb err if err
       async.forEach docs, ((doc, cb) =>
         return do cb unless EXTREG.test doc
-        console.log 'here', doc
-        url = null
+        x = {}
         readStream = fs.createReadStream path.join @blog.dir, doc
         readStream
           .pipe(yamlmd.stream())
           .pipe(defaultTo @blog)
           .pipe(defaultTo id: (doc.replace EXTREG, ''))
           .pipe(intercept((item) => @blog.documents.push item))
-          .pipe(intercept (item) => url = item.id)
+          .pipe(intercept (item) => x.url = item.id)
           .pipe(schnauzer.stream())
-          .pipe(@router(url)).on 'end', ->
-            console.log url
+          .pipe(@router(x)).on 'end', ->
+            console.log 'url:', x.url
             do cb
       ), cb
 
