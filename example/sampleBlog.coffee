@@ -1,4 +1,4 @@
-Mumpitz = require './Mumpitz'
+Mumpitz = require '../'
 
 blog = new Mumpitz dir : __dirname + '/articles'
 blog.go (err) ->
