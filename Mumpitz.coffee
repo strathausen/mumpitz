@@ -13,13 +13,16 @@ fs        = require 'fs'
 path      = require 'path'
 async     = require 'async'
 es        = require 'event-stream'
-connect   = require 'connect'
-# Plugins, implementing the stream api
+{ EventEmitter } = require 'events'
+# Plugins implementing the stream api
 yamlmd    = require 'yamlmd'
 schnauzer = require 'schnauzer'
 defaultTo = require './plugins/defaultTo'
 intercept = require './plugins/intercept'
-router    = require './plugins/router'
+DOCEXT = /\.(md|markdown|yamlmd)$/
+
+class Superwiser extends EventEmitter
+superwiser = new Superwiser
 
 class Mumpitz
   module.exports = Mumpitz
@@ -29,38 +32,28 @@ class Mumpitz
       throw new Error 'please specify "dir" where your articles are'
     
     @defaults = properties
-    @blog = new class Blog
+    @blog = new class MumpitzBlog
     _.defaults @blog, properties
     _.defaults @blog,
       documents : []
       template  : __dirname + '/example/theme/article.hbs'
-      app       : connect()
-    @router = router @blog.app
     
   go: (cb) ->
-    EXTREG = /\.(md|markdown|yamlmd)$/
     fs.readdir @blog.dir, (err, docs) =>
       return cb err if err
       async.forEach docs, ((doc, cb) =>
-        return do cb unless EXTREG.test doc
-        x = {}
-        readStream = fs.createReadStream path.join @blog.dir, doc
+        return do cb unless DOCEXT.test doc
+        docName = doc.replace DOCEXT, ''
+        outDir = @blog.public or @blog.dir
+        readStream = fs.createReadStream (path.join @blog.dir, doc)
+        writeStream = fs.createWriteStream (path.join outDir, "#{docName}.html")
         readStream
+          .pipe(es.join(''))
           .pipe(yamlmd.stream())
           .pipe(defaultTo @blog)
-          .pipe(defaultTo id: (doc.replace EXTREG, ''))
-          .pipe(intercept((item) => @blog.documents.push item))
-          .pipe(intercept (item) => x.url = item.id)
+          .pipe(defaultTo id: docName)
+          .pipe(intercept (item) => @blog.documents.push item)
           .pipe(schnauzer.stream())
-          .pipe(@router(x)).on 'end', ->
-            console.log 'url:', x.url
-            do cb
+          .pipe(writeStream)
+        do cb
       ), cb
-
-unless module.parent
-  mu = new Mumpitz
-    dir    : __dirname + '/example/articles'
-    layout : __dirname + '/example/theme/layout.hbs'
-  mu.go ->
-    console.error 'done'
-    mu.blog.app.listen 3000

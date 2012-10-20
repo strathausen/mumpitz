@@ -4,7 +4,9 @@ Mumpitz - all the blog engine you will ever need
 
 @author Johann Philipp Strathausen <strathausen@gmail.com>
 */
-var Mumpitz, async, connect, defaultTo, es, fs, intercept, mu, path, router, schnauzer, yamlmd, _;
+var DOCEXT, EventEmitter, Mumpitz, Superwiser, async, defaultTo, es, fs, intercept, path, schnauzer, superwiser, yamlmd, _,
+  __hasProp = Object.prototype.hasOwnProperty,
+  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
 require('coffee-script');
 
@@ -18,7 +20,7 @@ async = require('async');
 
 es = require('event-stream');
 
-connect = require('connect');
+EventEmitter = require('events').EventEmitter;
 
 yamlmd = require('yamlmd');
 
@@ -28,55 +30,63 @@ defaultTo = require('./plugins/defaultTo');
 
 intercept = require('./plugins/intercept');
 
-router = require('./plugins/router');
+DOCEXT = /\.(md|markdown|yamlmd)$/;
+
+Superwiser = (function(_super) {
+
+  __extends(Superwiser, _super);
+
+  function Superwiser() {
+    Superwiser.__super__.constructor.apply(this, arguments);
+  }
+
+  return Superwiser;
+
+})(EventEmitter);
+
+superwiser = new Superwiser;
 
 Mumpitz = (function() {
 
   module.exports = Mumpitz;
 
   function Mumpitz(properties) {
-    var Blog;
+    var MumpitzBlog;
     if (!properties.dir) {
       throw new Error('please specify "dir" where your articles are');
     }
     this.defaults = properties;
-    this.blog = new (Blog = (function() {
+    this.blog = new (MumpitzBlog = (function() {
 
-      function Blog() {}
+      function MumpitzBlog() {}
 
-      return Blog;
+      return MumpitzBlog;
 
     })());
     _.defaults(this.blog, properties);
     _.defaults(this.blog, {
       documents: [],
-      template: __dirname + '/example/theme/article.hbs',
-      app: connect()
+      template: __dirname + '/example/theme/article.hbs'
     });
-    this.router = router(this.blog.app);
   }
 
   Mumpitz.prototype.go = function(cb) {
-    var EXTREG,
-      _this = this;
-    EXTREG = /\.(md|markdown|yamlmd)$/;
+    var _this = this;
     return fs.readdir(this.blog.dir, function(err, docs) {
       if (err) return cb(err);
       return async.forEach(docs, (function(doc, cb) {
-        var readStream, x;
-        if (!EXTREG.test(doc)) return cb();
-        x = {};
+        var docName, outDir, readStream, writeStream;
+        if (!DOCEXT.test(doc)) return cb();
+        docName = doc.replace(DOCEXT, '');
+        outDir = _this.blog.public || _this.blog.dir;
         readStream = fs.createReadStream(path.join(_this.blog.dir, doc));
-        return readStream.pipe(yamlmd.stream()).pipe(defaultTo(_this.blog)).pipe(defaultTo({
-          id: doc.replace(EXTREG, '')
+        writeStream = fs.createWriteStream(path.join(outDir, "" + docName + ".html"));
+        readStream.pipe(es.join('')).pipe(yamlmd.stream()).pipe(defaultTo(_this.blog)).pipe(defaultTo({
+          id: docName
         })).pipe(intercept(function(item) {
           return _this.blog.documents.push(item);
-        })).pipe(intercept(function(item) {
-          return x.url = item.id;
-        })).pipe(schnauzer.stream()).pipe(_this.router(x)).on('end', function() {
-          console.log('url:', x.url);
-          return cb();
-        });
+        })).pipe(schnauzer.stream()).pipe(writeStream);
+        return cb();
       }), cb);
     });
   };
@@ -84,14 +94,3 @@ Mumpitz = (function() {
   return Mumpitz;
 
 })();
-
-if (!module.parent) {
-  mu = new Mumpitz({
-    dir: __dirname + '/example/articles',
-    layout: __dirname + '/example/theme/layout.hbs'
-  });
-  mu.go(function() {
-    console.error('done');
-    return mu.blog.app.listen(3000);
-  });
-}
