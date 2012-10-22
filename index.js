@@ -4,7 +4,7 @@ Mumpitz - all the blog engine you will ever need
 
 @author Johann Philipp Strathausen <strathausen@gmail.com>
 */
-var DOCEXT, EventEmitter, Mumpitz, Superwiser, async, defaultTo, es, fs, intercept, path, schnauzer, superwiser, yamlmd, _,
+var DOCEXT, EventEmitter, Mumpitz, Superwiser, async, defaultTo, es, fs, intercept, moment, path, schnauzer, superwiser, yamlmd, _,
   __hasProp = Object.prototype.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
@@ -21,6 +21,8 @@ async = require('async');
 es = require('event-stream');
 
 EventEmitter = require('events').EventEmitter;
+
+moment = require('moment');
 
 yamlmd = require('yamlmd');
 
@@ -65,10 +67,11 @@ Mumpitz = (function() {
     })());
     _.defaults(this.blog, properties);
     _.defaults(this.blog, {
-      documents: [],
       template: __dirname + '/example/theme/article.hbs'
     });
   }
+
+  Mumpitz.prototype.documents = [];
 
   Mumpitz.prototype.go = function(cb) {
     var _this = this;
@@ -81,13 +84,29 @@ Mumpitz = (function() {
         outDir = _this.blog.public || _this.blog.dir;
         readStream = fs.createReadStream(path.join(_this.blog.dir, doc));
         writeStream = fs.createWriteStream(path.join(outDir, "" + docName + ".html"));
-        readStream.pipe(es.join('')).pipe(yamlmd.stream()).pipe(defaultTo(_this.blog)).pipe(defaultTo({
+        return readStream.pipe(es.join('')).pipe(yamlmd.stream()).pipe(defaultTo(_this.blog)).pipe(defaultTo({
           id: docName
         })).pipe(intercept(function(item) {
-          return _this.blog.documents.push(item);
+          return _this.documents.push(item);
+        })).pipe(es.map(function(item, next) {
+          cb();
+          return superwiser.on('ready', function() {
+            return next(null, item);
+          });
         })).pipe(schnauzer.stream()).pipe(writeStream);
+      }), function() {
+        _this.documents = _.sortBy(_this.documents, function(doc) {
+          var date;
+          date = moment(doc.date);
+          if (!date.isValid()) date = moment(doc.date, 'MMMM Do, YYYY');
+          return -date.unix();
+        });
+        _this.documents.forEach(function(doc) {
+          return doc.documents = _this.documents;
+        });
+        superwiser.emit('ready');
         return cb();
-      }), cb);
+      });
     });
   };
 
