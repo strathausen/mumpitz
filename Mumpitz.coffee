@@ -14,6 +14,7 @@ path      = require 'path'
 async     = require 'async'
 es        = require 'event-stream'
 { EventEmitter } = require 'events'
+moment    = require 'moment'
 # Plugins implementing the stream api
 yamlmd    = require 'yamlmd'
 schnauzer = require 'schnauzer'
@@ -35,9 +36,9 @@ class Mumpitz
     @blog = new class MumpitzBlog
     _.defaults @blog, properties
     _.defaults @blog,
-      documents : []
-      template  : __dirname + '/example/theme/article.hbs'
+      template: __dirname + '/example/theme/article.hbs'
     
+  documents: []
   go: (cb) ->
     fs.readdir @blog.dir, (err, docs) =>
       return cb err if err
@@ -50,10 +51,28 @@ class Mumpitz
         readStream
           .pipe(es.join(''))
           .pipe(yamlmd.stream())
+          # Default properties
           .pipe(defaultTo @blog)
           .pipe(defaultTo id: docName)
-          .pipe(intercept (item) => @blog.documents.push item)
+          # Build doc index
+          .pipe(intercept (item) => @documents.push item)
+          # Synchronise here until all items have got here
+          .pipe(es.map (item, next) ->
+            do cb
+            superwiser.on 'ready', -> next null, item)
           .pipe(schnauzer.stream())
           .pipe(writeStream)
+      ), =>
+        # Sorting documents by date (if possible)
+        @documents = _.sortBy @documents, (doc) ->
+          date = moment doc.date
+          # Also supporting a nicer format with ordinal numbers
+          unless date.isValid()
+            date = moment doc.date, 'MMMM Do, YYYY'
+          -date.unix()
+        # Attaching documents to each document
+        @documents.forEach (doc) =>
+          doc.documents = @documents
+        # Now, get back to work everybody!
+        superwiser.emit 'ready'
         do cb
-      ), cb
