@@ -89,10 +89,10 @@ Mumpitz = (function() {
         })).pipe(intercept(function(item) {
           return _this.documents.push(item);
         })).pipe(es.map(function(item, next) {
-          cb();
-          return superwiser.on('ready', function() {
+          superwiser.on('ready', function() {
             return next(null, item);
           });
+          return cb();
         })).pipe(schnauzer.stream()).pipe(writeStream);
       }), function() {
         _this.documents = _.sortBy(_this.documents, function(doc) {

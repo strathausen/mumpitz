@@ -58,8 +58,9 @@ class Mumpitz
           .pipe(intercept (item) => @documents.push item)
           # Synchronise here until all items have got here
           .pipe(es.map (item, next) ->
+            superwiser.on 'ready', -> next null, item
             do cb
-            superwiser.on 'ready', -> next null, item)
+          )
           .pipe(schnauzer.stream())
           .pipe(writeStream)
       ), =>
