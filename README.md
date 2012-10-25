@@ -1,6 +1,10 @@
 # Mumpitz
 
-Beta, untested pipe-based minimalistic html rendering.
+The stream-punk of blog engines.
+
+Untested pipe-based minimalistic html rendering.
+
+All the power to the pipes!
 
 ## License
 
@@ -8,8 +12,8 @@ MIT license. do what you want. commercial use or whatever is okay.
 
 ## Roadmap
 
-Tests, docs, finish it up...
+Tests, docs.
 
 ## What else?
 
-talk to the author via strathausen@gmail.com - cto of upcload.com
+Talk to the author via strathausen@gmail.com - cto of upcload.com
