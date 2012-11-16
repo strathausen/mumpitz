@@ -8,7 +8,7 @@ All the power to the pipes!
 
 ## License
 
-MIT license. do what you want. commercial use or whatever is okay.
+MIT, BSD, whatever.
 
 ## Roadmap
 
