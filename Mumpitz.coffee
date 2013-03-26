@@ -31,13 +31,13 @@ class Mumpitz
     # This option is mandatory
     unless properties.dir
       throw new Error 'please specify "dir" where your articles are'
-    
+
     @defaults = properties
     @blog = new class MumpitzBlog
     _.defaults @blog, properties
     _.defaults @blog,
       template: __dirname + '/example/theme/article.hbs'
-    
+
   documents: []
   go: (cb) ->
     fs.readdir @blog.dir, (err, docs) =>
