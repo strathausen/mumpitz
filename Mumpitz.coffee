@@ -13,7 +13,6 @@ fs        = require 'fs'
 path      = require 'path'
 async     = require 'async'
 es        = require 'event-stream'
-{ EventEmitter } = require 'events'
 moment    = require 'moment'
 # Plugins implementing the stream api
 yamlmd    = require 'yamlmd'
@@ -21,9 +20,6 @@ schnauzer = require 'schnauzer'
 defaultTo = require './plugins/defaultTo'
 intercept = require './plugins/intercept'
 DOCEXT = /\.(md|markdown|yamlmd)$/
-
-class Superwiser extends EventEmitter
-superwiser = new Superwiser
 
 class Mumpitz
   module.exports = Mumpitz
@@ -40,6 +36,8 @@ class Mumpitz
 
   documents: []
   go: (cb) ->
+    # Functions waiting here until they get executed
+    waiters = []
     fs.readdir @blog.dir, (err, docs) =>
       return cb err if err
       async.forEach docs, ((doc, cb) =>
@@ -58,7 +56,7 @@ class Mumpitz
           .pipe(intercept (item) => @documents.push item)
           # Synchronise here until all items have got here
           .pipe(es.map (item, next) ->
-            superwiser.on 'ready', -> next null, item
+            waiters.push -> next null, item
             do cb
           )
           .pipe(schnauzer.stream())
@@ -75,5 +73,5 @@ class Mumpitz
         @documents.forEach (doc) =>
           doc.documents = @documents
         # Now, get back to work everybody!
-        superwiser.emit 'ready'
+        waiters.forEach (f) -> do f
         do cb
