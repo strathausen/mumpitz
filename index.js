@@ -89,11 +89,11 @@ Mumpitz = (function() {
         _this.documents = _.sortBy(_this.documents, function(doc) {
           var date;
 
-          date = moment(doc.date);
-          if (!date.isValid()) {
-            date = moment(doc.date, 'MMMM Do, YYYY');
+          if (doc.date == null) {
+            return 0;
           }
-          return -date.unix();
+          date = doc.date.replace(/([0-9]+)(st|nd|rd|th|)/g, '$1');
+          return -moment(date).unix();
         });
         _this.documents.forEach(function(doc) {
           return doc.documents = _this.documents;

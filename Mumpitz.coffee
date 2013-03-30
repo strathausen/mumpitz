@@ -64,11 +64,9 @@ class Mumpitz
       ), =>
         # Sorting documents by date (if possible)
         @documents = _.sortBy @documents, (doc) ->
-          date = moment doc.date
-          # Also supporting a nicer format with ordinal numbers
-          unless date.isValid()
-            date = moment doc.date, 'MMMM Do, YYYY'
-          -date.unix()
+          return 0 unless doc.date?
+          date = doc.date.replace /([0-9]+)(st|nd|rd|th|)/g, '$1'
+          -moment(date).unix()
         # Attaching documents to each document
         @documents.forEach (doc) =>
           doc.documents = @documents
