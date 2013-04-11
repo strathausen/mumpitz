@@ -44,8 +44,11 @@ class Mumpitz
         return do cb unless DOCEXT.test doc
         docName = doc.replace DOCEXT, ''
         outDir = @blog.public or @blog.dir
+        # If there's already an extension, don't add another one
+        # otherwise, you should not have dots in your file names
+        outDoc = docName + unless /^.+\.[\w]+$/.test docName then '.html' else ''
         readStream = fs.createReadStream (path.join @blog.dir, doc)
-        writeStream = fs.createWriteStream (path.join outDir, "#{docName}.html")
+        writeStream = fs.createWriteStream (path.join outDir, outDoc)
         readStream
           .pipe(es.join(''))
           .pipe(yamlmd.stream())
