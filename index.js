@@ -41,7 +41,6 @@ Mumpitz = (function() {
     if (!properties.dir) {
       throw new Error('please specify "dir" where your articles are');
     }
-    this.defaults = properties;
     this.blog = new (MumpitzBlog = (function() {
 
       function MumpitzBlog() {}
@@ -51,7 +50,7 @@ Mumpitz = (function() {
     })());
     _.defaults(this.blog, properties);
     _.defaults(this.blog, {
-      template: __dirname + '/example/theme/article.hbs'
+      template: path.join(__dirname, 'example/theme/article.hbs')
     });
   }
 
@@ -72,7 +71,7 @@ Mumpitz = (function() {
         }
         docName = doc.replace(DOCEXT, '');
         outDir = _this.blog["public"] || _this.blog.dir;
-        outDoc = docName + (/^.+\.[\w]+$/.test(doc) ? '.html' : '');
+        outDoc = docName + (!/^.+\.[\w]+$/.test(docName) ? '.html' : '');
         readStream = fs.createReadStream(path.join(_this.blog.dir, doc));
         writeStream = fs.createWriteStream(path.join(outDir, outDoc));
         return readStream.pipe(es.join('')).pipe(yamlmd.stream()).pipe(defaultTo(_this.blog)).pipe(defaultTo({
