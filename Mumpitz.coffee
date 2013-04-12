@@ -28,11 +28,10 @@ class Mumpitz
     unless properties.dir
       throw new Error 'please specify "dir" where your articles are'
 
-    @defaults = properties
     @blog = new class MumpitzBlog
     _.defaults @blog, properties
     _.defaults @blog,
-      template: __dirname + '/example/theme/article.hbs'
+      template: path.join(__dirname, 'example/theme/article.hbs')
 
   documents: []
   go: (cb) ->
