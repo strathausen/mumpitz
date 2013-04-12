@@ -2,7 +2,7 @@
   "author": "Johann Philipp Strathausen <strathausen@gmail.com>",
   "name": "mumpitz",
   "description": "Stream-Punk Blog.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "http://stratha.us/",
   "repository": {
     "type": "git",
@@ -17,10 +17,11 @@
     "yamlmd": "~0.2.0",
     "schnauzer": "~0.2.1",
     "event-stream": "~3.0.7",
-    "moment": "~1.7.2",
-    "coffee-script": "1.x.x"
+    "moment": "~1.7.2"
   },
   "scripts": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "coffee-script": "1.x.x"
+  },
   "optionalDependencies": {}
 }
