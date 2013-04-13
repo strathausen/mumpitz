@@ -2,8 +2,8 @@
   "author": "Johann Philipp Strathausen <strathausen@gmail.com>",
   "name": "mumpitz",
   "description": "Stream-Punk Blog.",
-  "version": "0.2.1",
-  "homepage": "http://stratha.us/",
+  "version": "0.2.2",
+  "homepage": "http://stratha.us/mumpitz",
   "repository": {
     "type": "git",
     "url": "git://github.com/strathausen/mumpitz.git"
