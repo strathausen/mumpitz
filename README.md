@@ -6,6 +6,10 @@ Untested pipe-based minimalistic html rendering.
 
 All the power to the pipes!
 
+## Usage
+
+See <a href="https://github.com/strathausen/blog"></a> for an example.
+
 ## License
 
 MIT, BSD, whatever.
