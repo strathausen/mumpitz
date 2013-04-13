@@ -26,7 +26,7 @@ blog.go(function(err) {
 Now all the yaml annotated markdown files in directory `articles` would be
 compiled to HTML files in the same directory.  Of course, you can also
 specify a differend directory to store the HTML files in.
-See <a href="https://github.com/strathausen/blog"></a> for a more
+See <a href="https://github.com/strathausen/blog">my blog</a> for a more
 detailed example to see all the options in use.
 
 ## License
