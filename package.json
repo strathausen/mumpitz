@@ -14,7 +14,7 @@
   "dependencies": {
     "underscore": "1.x.x",
     "async": "~2.0.1",
-    "yamlmd": "~0.2.0",
+    "yamlmd": ">=0.2.1",
     "schnauzer": "~0.2.1",
     "event-stream": "~3.3.4",
     "moment": "~2.14.1"
