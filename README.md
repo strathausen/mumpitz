@@ -39,4 +39,4 @@ Tests, docs.
 
 ## What else?
 
-Talk to the author via strathausen@gmail.com - CTO of <a href="http://www.upcload.com">upcload.com</a>
+Talk to the author via philipp@stratha.us

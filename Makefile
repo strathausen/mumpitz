@@ -1,2 +1,2 @@
 compile:
-	coffee -j index.js -bc Mumpitz.coffee
+	coffee --compile --bare --stdio < Mumpitz.coffee > index.js
