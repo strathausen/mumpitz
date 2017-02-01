@@ -17,7 +17,7 @@
     "yamlmd": ">=0.2.1",
     "schnauzer": "~0.2.1",
     "event-stream": "~3.3.4",
-    "moment": "~2.14.1"
+    "moment": "~2.15.2"
   },
   "scripts": {},
   "devDependencies": {
